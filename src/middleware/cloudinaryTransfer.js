@@ -13,7 +13,7 @@ const uploader = async (req, res, next) => {
     const fileName = `payment:${body.id_transaction}`;
     const cloudinaryOpt = {
         public_id: fileName,
-        folder: "E-Kontrakan",
+        folder: "E-field",
     };
 
     try {

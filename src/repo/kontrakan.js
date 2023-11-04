@@ -246,8 +246,6 @@ const postDetail = (req) => {
       ],
       (error, result) => {
         if (error) {
-          console.log(error);
-          console.log(query);
           return reject({ status: 500, msg: "internal server error" });
         }
         let resultSuccess = { ...result.rows[0] };

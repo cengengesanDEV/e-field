@@ -10,7 +10,7 @@ const multipleCloudinary = require('../middleware/multipleCloudinary')
 const multer = require("multer");
 const { diskUpload, memoryUpload } = require("../middleware/upload");
 function uploadFile(req, res, next) {
-  memoryUpload.single("image")(req, res, function (err) {
+  memoryUpload.single("image_cover")(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.log(err);
       return res.status(400).json({ msg: err.message });

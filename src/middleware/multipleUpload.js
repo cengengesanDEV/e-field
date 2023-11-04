@@ -4,21 +4,19 @@ const path = require("path");
 const memory = multer.memoryStorage();
 const multerOption = {
   memory,
-  fileFilter: (req, file, cb) => {
-    console.log("req.file")
-    const ext = path.extname(file.originalname);
-    const allowedExt = /png|jpg|jpeg/;
-    if (!allowedExt.test(ext)) return cb(new Error("invalid Data Type"), false);
-    cb(null, true);
-  },
-  limits: { fileSize: 1 * 1024 * 1024 },
+  // fileFilter: (req, file, cb) => {
+  //   const ext = path.extname(file.originalname);
+  //   const allowedExt = /png|jpg|jpeg/;
+  //   if (!allowedExt.test(ext)) return cb(new Error("invalid Data Type"), false);
+  //   cb(null, true);
+  // },
 };
 
-const upload = multer(multerOption).array("images", 10);
+const upload = multer(multerOption).fields([{name: 'image_cover', maxCount: 1},{ name: 'images' }])
 const multerHandler = (req, res, next) => {
   upload(req, res, (error) => {
     if (error instanceof multer.MulterError) {
-      console.log(error);
+      console.log(error)
       return res.status(400).json({
         status: 400,
         msg: "File too large, image must be 2MB or lower",
