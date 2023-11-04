@@ -66,9 +66,9 @@ const login = (body) => {
           //     }
           // )
           jwtr
-            .sign(payload, process.env.SECRET_KEY, {
+            .sign(payload, "1234", {
               expiresIn: "1d",
-              issuer: process.env.ISSUER,
+              issuer: "coba",
             })
             .then((token) => {
               // Token verification
