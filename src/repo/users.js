@@ -76,7 +76,7 @@ const profile = (body, token) => {
       if (idx === array.length - 1) {
         query += `${key} = $${idx + 1} where id = $${
           idx + 2
-        } returning full_name,location,role,email,address,id,phone_number,image,gender,no_rekening,image_ktp,no_ktp`;
+        } returning *`;
         values.push(body[key], token);
         return;
       }
@@ -98,7 +98,7 @@ const profile = (body, token) => {
 const postKtp = (image, token) => {
   return new Promise((resolve, reject) => {
     let query =
-      "update users set image_ktp = $1 where id = $2 returning full_name,location,role,email,address,id,phone_number,image,gender,no_rekening,image_ktp,no_ktp";
+      "update users set image_identity = $1 where id = $2 returning *";
     postgreDb.query(query, [image, token], (err, result) => {
       if (err) {
         console.log(err);
@@ -133,7 +133,7 @@ const deleteUsers = (id, msg) => {
 const getUsersById = (id) => {
   return new Promise((resolve, reject) => {
     const query =
-      "select id,role,full_name,phone_number,email,image,gender,location,address,no_rekening,image_ktp,no_ktp from users where id = $1";
+      "select * from users where id = $1";
     postgreDb.query(query, [id], (error, result) => {
       if (error) {
         console.log(error);
@@ -146,7 +146,7 @@ const getUsersById = (id) => {
 
 const getAllUsers = (body) => {
   return new Promise((resolve, reject) => {
-    let query = `select id,role,full_name,phone_number,email,image,gender,status_acc from users where (role = 'owner' or role = 'customer')`;
+    let query = `select * from users where (role = 'owner' or role = 'customer')`;
     if (body.search) {
       query += ` and lower(full_name) like lower('%${body.search}%')`;
     }
