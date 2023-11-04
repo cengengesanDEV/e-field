@@ -5,7 +5,7 @@ const client = require("../config/redis");
 
 const register = (body) => {
   return new Promise((resolve, reject) => {
-    let query = `insert into users(role,phone_number,email,status_acc,password,full_name,created_at,updated_at) values($1, $2,$3 ,$4,$5,$6, to_timestamp($7),to_timestamp($8)) returning role,phone_number,email,status_acc,full_name `;
+    let query = `insert into users(role,phone_number,email,status_acc,password,full_name) values($1, $2,$3 ,$4,$5,$6) returning role,phone_number,email,status_acc,full_name `;
     const { role, email, passwords, phone_number, name } = body;
     const validasiEmail = `select email from users where email like $1`;
     const validasiPhone = `select phone_number from users where phone_number like $1`;
@@ -37,7 +37,6 @@ const register = (body) => {
             console.log(error);
             return reject({ status: 500, msg: "Internal Server error" });
           }
-          const timestamp = Date.now() / 1000;
           postgreDb.query(
             query,
             [
@@ -47,8 +46,6 @@ const register = (body) => {
               status,
               hashedPasswords,
               name,
-              timestamp,
-              timestamp,
             ],
             (error, response) => {
               if (error) {
