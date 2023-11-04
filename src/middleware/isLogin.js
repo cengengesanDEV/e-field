@@ -9,7 +9,7 @@ module.exports = () => {
         if (!token) return res.status(401).json({ msg: "You have to login first", data: null })
 
         jwtr
-            .verify(token, process.env.SECRET_KEY, { issuer: process.env.ISSUER })
+            .verify(token, "1234", { issuer: "coba" })
             .then((decodedPayload) => {
                 req.userPayload = decodedPayload;
                 next();
