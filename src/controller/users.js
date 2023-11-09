@@ -40,7 +40,7 @@ const profile = async (req, res) => {
 const postKtp = async (req, res) => {
   try {
     if (req.file) {
-      var image = `/${req.file.public_id}.${req.file.format}`;
+      var image = `${req.file.secure_url}`;
     }
 
     const response = await userRepo.postKtp(req.file.secure_url, req.userPayload.user_id);
