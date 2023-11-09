@@ -4,6 +4,7 @@ const cloudinary = require("../config/cloudinary");
 
 const uploader = async (req, res, next) => {
     const { file,userPayload } = req;
+    console.log({file})
     if (!file) return next();
     console.log({req})
 
