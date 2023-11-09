@@ -22,7 +22,7 @@ function uploadFile(req, res, next) {
 }
 
 function uploadKtp(req, res, next) {
-  memoryUpload.single("image_ktp")(req, res, function (err) {
+  memoryUpload.single("image_identity")(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.log(err);
       return res.status(400).json({ msg: "Size to large" });
