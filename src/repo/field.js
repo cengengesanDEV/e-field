@@ -150,18 +150,21 @@ const getAllField = (param, hostAPI) => {
       link += `name=${param.name}`
     }
     if (param.city) {
+      if(param.name){
+        link+= '&'
+      }
       query += `and city = '${param.city}' `;
       link += `city=${param.city}`;
     }
     if (param.sort === "cheapest") {
-      if (param.city) {
+      if (param.city || param.name) {
         link += `&`;
       }
       query += `order by price asc`;
       link += `sort=cheapest`;
     }
     if (param.sort === "expensive") {
-      if (param.city) {
+      if (param.city || param.name) {
         link += `&`;
       }
       query += "order by price desc";
@@ -189,8 +192,6 @@ const getAllField = (param, hostAPI) => {
           console.log(err);
           return reject({ msg: "internal server error", status: 500 });
         }
-        if (queryresult.rows.length == 0)
-          return reject({ msg: "data not found", status: 404 });
         let resNext = null;
         let resPrev = null;
         if (param.page && param.limit) {
