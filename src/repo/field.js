@@ -216,8 +216,8 @@ const getAllField = (param, hostAPI) => {
           }
           let sendResponse = {
             dataCount: queryresult.rowCount,
-            next: resNext,
-            prev: resPrev,
+            next: resNext?true:false,
+            prev: resPrev?true:false,
             totalPage: Math.ceil(result.rowCount / limit),
           };
           return resolve({
@@ -229,8 +229,8 @@ const getAllField = (param, hostAPI) => {
         }
         let sendResponse = {
           dataCount: result.rowCount,
-          next: resNext,
-          prev: resPrev,
+          next: resNext?true:false,
+          prev: resPrev?true:false,
           totalPage: null,
         };
         return resolve({
