@@ -7,7 +7,7 @@ const limits = {
 const fileFilter = (req, file, cb) => {
     const ext = path.extname(file.originalname);
     // const allowedExt = ["jpg", "png"];
-    const allowedExt = /jpg|png/;
+    const allowedExt = /jpg|png|jpeg|JPEG|PNG|JPG/;
     // re.test : boolean
     if (!allowedExt.test(ext))
         return cb(new Error("Only Use Allowed Extension (JPG, PNG)"), false);
