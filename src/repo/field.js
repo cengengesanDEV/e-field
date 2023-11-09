@@ -143,9 +143,13 @@ const patchField = (req, id) => {
 
 const getAllField = (param, hostAPI) => {
   return new Promise((resolve, reject) => {
-    let query = "select * from field where deleted_at is null";
+    let query = "select * from field where deleted_at is null ";
     let link = `${hostAPI}/api/field?`;
-    if (param.province) {
+    if(param.name){
+      query += `and name like '%${param.name}%' `
+      link += `name=${param.name}`
+    }
+    if (param.city) {
       query += `and city = '${param.city}' `;
       link += `city=${param.city}`;
     }
