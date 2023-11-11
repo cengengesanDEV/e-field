@@ -1,7 +1,7 @@
 const postgreDb = require("../config/postgre"); //koneksi database
 const cloudinary = require("../config/cloudinary");
 
-const postField = (id, body, images) => {
+const postField = (id, body) => {
   return new Promise((resolve, reject) => {
     const {
       name,
@@ -12,9 +12,10 @@ const postField = (id, body, images) => {
       image_cover,
       description,
       type,
-      address
+      address,
+      images
     } = body;
-    console.log(body.images[0])
+    console.log(images[0])
     // console.log({body,images,id})
     const query =
       "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type,address) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
