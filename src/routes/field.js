@@ -12,7 +12,8 @@ const {
     patchDetail,
     getAllField,
     getDetailField,
-    getFieldByUserId
+    getFieldByUserId,
+    getFieldImages
   } = require("../controller/field");
 
   fieldRouter.post('/',isLogin(),allowedRole("owner"),uploadMultiple,multipleCloudinary,cloudinaryField,postField);
@@ -20,5 +21,6 @@ const {
   fieldRouter.get('/',getAllField)
   fieldRouter.get("/detail/:id/:date",getDetailField)
   fieldRouter.get("/detail/owner",isLogin(),getFieldByUserId)
+  fieldRouter.get("/images/:id",getFieldImages)
 
   module.exports = fieldRouter;

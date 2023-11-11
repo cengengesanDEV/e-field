@@ -311,12 +311,30 @@ const getOwnerField = (id) => {
   });
 };
 
+const getImagesField = (id) => {
+  return new Promise((resolve, reject) => {
+    const getFieldQuery = "select * from image_field where field_id = $1";
+    postgreDb.query(getFieldQuery, [id], (err, result) => {
+      if (err) {
+        console.log(err);
+        return reject({ msg: "internal server error", status: 500 });
+      }
+      return resolve({
+        msg: "data found",
+        data: result.rows,
+        status: 200,
+      });
+    });
+  });
+};
+
 const fieldRepo = {
   postField,
   patchField,
   getAllField,
   getDetailField,
   getOwnerField,
+  getImagesField
 };
 
 module.exports = fieldRepo;

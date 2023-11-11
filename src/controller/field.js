@@ -55,12 +55,22 @@ const postField = async (req, res) => {
     }
   };
 
+  const getFieldImages = async (req, res) => {
+    try {
+      const response = await fieldRepo.getImagesField(req.params.id);
+      sendResponse.success(res, response.status, response);
+    } catch (error) {
+      sendResponse.error(res, error.status, error);
+    }
+  };
+
   const fieldController = {
     postField,
     patchDetail,
     getAllField,
     getDetailField,
-    getFieldByUserId
+    getFieldByUserId,
+    getFieldImages
   };
   
   module.exports = fieldController;
