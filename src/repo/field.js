@@ -14,7 +14,7 @@ const postField = (id, body, images) => {
       type
     } = body;
     const query =
-      "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type) values($1,$2,$3,$4,$5,$6,$7,$8,$9) returning *";
+      "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type,address) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
     postgreDb.query(
       query,
       [
