@@ -5,7 +5,7 @@ const path = require("path");
 const uploader = async (req, res, next) => {
   
   const { files } = req;
-  const fileImages = files.images
+  const fileImages = files.images;
   if (!fileImages) return next();
 
   req.images = [];
