@@ -304,7 +304,7 @@ const getOwnerField = (id) => {
       }
       return resolve({
         msg: "data found",
-        data: result.rows[0],
+        data: result.rows,
         status: 200,
       });
     });
