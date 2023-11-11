@@ -11,9 +11,10 @@ const postField = (id, body, images) => {
       price,
       image_cover,
       description,
+      type
     } = body;
     const query =
-      "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description) values($1,$2,$3,$4,$5,$6,$7,$8) returning *";
+      "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type) values($1,$2,$3,$4,$5,$6,$7,$8,$9) returning *";
     postgreDb.query(
       query,
       [
@@ -25,6 +26,7 @@ const postField = (id, body, images) => {
         Number(price),
         image_cover.secure_url,
         description,
+        type
       ],
       (error, result) => {
         if (error) {
