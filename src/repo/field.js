@@ -13,6 +13,7 @@ const postField = (id, body, images) => {
       description,
       type
     } = body;
+    console.log({body,images,id})
     const query =
       "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type,address) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
     postgreDb.query(
