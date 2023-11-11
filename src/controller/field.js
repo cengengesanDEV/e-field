@@ -13,8 +13,10 @@ const postField = async (req, res) => {
 
   const patchDetail = async (req, res) => {
     try {
-      if(req.body.image_cover){
+      if(req?.body?.image_cover?.secure_url){
         req.body.image_cover = req.body.image_cover.secure_url 
+      }else{
+        delete req.body.image_cover
       }
       const response = await fieldRepo.patchField(req, req.params.id);
       sendResponse.success(res, 200, {
