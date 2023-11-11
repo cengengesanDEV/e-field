@@ -5,6 +5,7 @@ const path = require("path");
 const uploader = async (req, res, next) => {
   
   const { files } = req;
+  console.log({files})
   const fileImages = files.images;
   if (!fileImages) return next();
 
