@@ -295,21 +295,49 @@ const getDetailField = (id, date) => {
 };
 
 const getOwnerField = (id) => {
-  return new Promise((resolve, reject) => {
-    const getFieldQuery = "select * from field where users_id = $1";
-    postgreDb.query(getFieldQuery, [id], (err, result) => {
-      if (err) {
-        console.log(err);
-        return reject({ msg: "internal server error", status: 500 });
+  return new Promise(async (resolve, reject) => {
+    try {
+      const getFieldQuery = "select * from field where users_id = $1";
+      const getImage = "select * from image_field where field_id = $1";
+
+      const fieldResult = await new Promise((fieldResolve, fieldReject) => {
+        postgreDb.query(getFieldQuery, [id], (err, result) => {
+          if (err) {
+            console.log(err);
+            fieldReject({ msg: "internal server error", status: 500 });
+            return;
+          }
+          fieldResolve(result.rows);
+        });
+      });
+
+      const hasil = fieldResult.slice(); // Copy the array to avoid mutation
+
+      for (let index = 0; index < hasil.length; index++) {
+        const imageResult = await new Promise((imageResolve, imageReject) => {
+          postgreDb.query(getImage, [hasil[index].id], (err, result) => {
+            if (err) {
+              console.log(err);
+              imageReject({ status: 500, msg: 'internal server error' });
+              return;
+            }
+            imageResolve(result.rows);
+          });
+        });
+        hasil[index] = { ...hasil[index], images: imageResult };
       }
-      return resolve({
+
+      resolve({
         msg: "data found",
-        data: result.rows,
+        data: hasil,
         status: 200,
       });
-    });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
+
 
 const getImagesField = (id) => {
   return new Promise((resolve, reject) => {
