@@ -297,8 +297,8 @@ const getDetailField = (id, date) => {
 const getOwnerField = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getFieldQuery = "select * from field where users_id = $1";
-      const getImage = "select * from image_field where field_id = $1";
+      const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1";
+      const getImage = "select image from image_field where field_id = $1";
 
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {
         postgreDb.query(getFieldQuery, [id], (err, result) => {
