@@ -4,6 +4,7 @@ const authRouter = require("./auth.js");
 const userRouter = require("./users");
 const kontrakanRouter = require("./kontrakan");
 const fieldRouter = require("./field");
+const paymentRouter = require("./payment.js")
 
 const mainRouter = express.Router();
 
@@ -13,6 +14,7 @@ mainRouter.use(`${prefix}/auth`, authRouter);
 mainRouter.use(`${prefix}/users`, userRouter);
 mainRouter.use(`${prefix}/kontrakan`, kontrakanRouter);
 mainRouter.use(`${prefix}/field`, fieldRouter);
+mainRouter.use(`${prefix}/payment`, paymentRouter);
 
 mainRouter.get("/", (req, res) => {
   res.json({
