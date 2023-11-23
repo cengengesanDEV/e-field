@@ -13,7 +13,7 @@ const {
     getAllField,
     getDetailField,
     getFieldByUserId,
-    getFieldImages
+    deleteField
   } = require("../controller/field");
 
   fieldRouter.post('/',isLogin(),allowedRole("owner"),uploadMultiple,multipleCloudinary,cloudinaryField,postField);
@@ -21,6 +21,6 @@ const {
   fieldRouter.get('/',getAllField)
   fieldRouter.get("/detail/:id/:date",getDetailField)
   fieldRouter.get("/detail/owner",isLogin(),getFieldByUserId)
-  fieldRouter.get("/images/:id",getFieldImages)
+  fieldRouter.get("/delete/:id",deleteField)
 
   module.exports = fieldRouter;

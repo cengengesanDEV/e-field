@@ -57,9 +57,9 @@ const postField = async (req, res) => {
     }
   };
 
-  const getFieldImages = async (req, res) => {
+  const deleteField = async (req, res) => {
     try {
-      const response = await fieldRepo.getImagesField(req.params.id);
+      const response = await fieldRepo.deleteField(req.params.id);
       sendResponse.success(res, response.status, response);
     } catch (error) {
       sendResponse.error(res, error.status, error);
@@ -72,7 +72,7 @@ const postField = async (req, res) => {
     getAllField,
     getDetailField,
     getFieldByUserId,
-    getFieldImages
+    deleteField
   };
   
   module.exports = fieldController;

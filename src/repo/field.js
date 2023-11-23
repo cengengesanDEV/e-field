@@ -343,16 +343,17 @@ const getOwnerField = (id) => {
 };
 
 
-const getImagesField = (id) => {
+const deleteField = (id) => {
   return new Promise((resolve, reject) => {
-    const getFieldQuery = "select * from image_field where field_id = $1";
-    postgreDb.query(getFieldQuery, [id], (err, result) => {
+    const getFieldQuery = "update field set deleted_at = to_timestamp($1) where id = $2";
+    const timeStamp = Date.now() / 1000;
+    postgreDb.query(getFieldQuery, [timeStamp,id], (err, result) => {
       if (err) {
         console.log(err);
         return reject({ msg: "internal server error", status: 500 });
       }
       return resolve({
-        msg: "data found",
+        msg: "delete field success",
         data: result.rows,
         status: 200,
       });
@@ -366,7 +367,7 @@ const fieldRepo = {
   getAllField,
   getDetailField,
   getOwnerField,
-  getImagesField
+  deleteField
 };
 
 module.exports = fieldRepo;
