@@ -278,7 +278,7 @@ const getDetailField = (id, date) => {
           const totalPlay = [];
           if (result.rows.length > 0) {
             result.rows.forEach((value) => {
-              for (let x = value.start_play; x <= value.end_play; x++) {
+              for (let x = value.start_play; x < value.end_play; x++) {
                 totalPlay.push({start:x,end:x+1});
               }
             });
