@@ -75,11 +75,11 @@ const patchField = (req, id) => {
     let query = "update field set ";
     let { body } = req;
     if (body.image_cover === "") delete body.image_cover;
-    if (body.imageDelete) {
-      const imageDelete = body.imageDelete;
-      console.log({imageDelete})
-      delete body.imageDelete;
-      let split = imageDelete.split(",");
+    if (body.deletedimage) {
+      const deletedimage = body.deletedimage;
+      console.log({deletedimage})
+      delete body.deletedimage;
+      let split = deletedimage.split(",");
       let queryDeleteImage = "delete from image_field where image in (";
       split.forEach((_, index, arr) => {
         if (index === arr.length - 1) {
