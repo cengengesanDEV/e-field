@@ -77,6 +77,7 @@ const patchField = (req, id) => {
     if (body.image_cover === "") delete body.image_cover;
     if (body.imageDelete) {
       const imageDelete = body.imageDelete;
+      console.log({imageDelete})
       delete body.imageDelete;
       let split = imageDelete.split(",");
       let queryDeleteImage = "delete from image_field where image in (";
