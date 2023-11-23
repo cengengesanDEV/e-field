@@ -274,15 +274,19 @@ const getDetailField = (id, date) => {
             console.log(err);
             return reject({ msg: "internal server error", status: 500 });
           }
+          const dataValue = []
+          const totalPlay = [];
           if (result.rows.length > 0) {
-            const totalPlay = [];
             result.rows.forEach((value) => {
-              for (i = value.start_play; i <= value.end_play; i++) {
-                totalPlay.push(i);
+              for (let x = value.start_play; x <= value.end_play; x++) {
+                totalPlay.push({start:x,end:x+1});
               }
             });
-            data = { ...data, booking: totalPlay };
           }
+          for(let i = data.field.start_hour;i<=data.field.end_hour;i++ ){
+            dataValue.push({ start: i, end: i + 1 , isBooked:totalPlay.find((value)=>value.start===i&&value.end===i+1)?true:false})
+          }
+          data = { ...data, dataValue };
           return resolve({
             msg: "data found",
             data: data,
