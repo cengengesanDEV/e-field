@@ -32,7 +32,7 @@ const getBookingOwner = async (req, res) => {
       const { user_id } = req.userPayload;
       const response = await paymentRepo.getBookingOwner(
         user_id,
-        req.params.status
+        req.query
       );
       sendResponse.success(res, response.status, response);
     } catch (error) {
@@ -40,6 +40,18 @@ const getBookingOwner = async (req, res) => {
     }
   };
 
-const paymentController = {postPayment,getBookingCustomer,getBookingOwner}
+const patchStatusBooking = async (req, res) => {
+    try {
+      const response = await paymentRepo.patchStatusBooking(
+        req.params.id,
+        req.body.status
+      );
+      sendResponse.success(res, response.status, response);
+    } catch (error) {
+      sendResponse.error(res, error.status, error);
+    }
+  };
+
+const paymentController = {postPayment,getBookingCustomer,getBookingOwner,patchStatusBooking}
 
 module.exports = paymentController;

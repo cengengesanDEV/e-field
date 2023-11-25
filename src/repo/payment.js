@@ -61,11 +61,18 @@ const getBookingCustomer = (id, status) => {
   });
 };
 
-const getBookingOwner = (id, status) => {
+const getBookingOwner = (id, params) => {
   return new Promise((resolve, reject) => {
-    const query =
-      "select b.play_date,b.start_play,b.end_play,b.username,b.image_payment,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address,u.image_identity,u.no_identity,u.full_name,u.phone_number from booking b inner join field f on b.field_id = f.id inner join users u on b.renter_id = u.id where f.users_id = $1 and b.deleted_renter is null and b.status = $2";
-    postgreDb.query(query, [id, status], (error, result) => {
+    const value = [id,params.status]
+    let query =
+      "select b.id,b.play_date,b.start_play,b.end_play,b.username,b.image_payment,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address,u.image_identity,u.no_identity,u.full_name,u.phone_number from booking b inner join field f on b.field_id = f.id inner join users u on b.renter_id = u.id where f.users_id = $1 and b.deleted_renter is null and b.status = $2";
+    if(params.type){
+      query +=` and f.type = '${params.type}'`
+    }
+    if(params.username){
+      query += ` and b.username like '%${params.username}%'`
+    }
+    postgreDb.query(query, value, (error, result) => {
       if (error) {
         console.log(error);
         return reject({ status: 500, msg: "internal server error" });
@@ -79,6 +86,24 @@ const getBookingOwner = (id, status) => {
   });
 };
 
-const paymentRepo = { postPayment , getBookingCustomer ,getBookingOwner};
+const patchStatusBooking = (id, status) => {
+  return new Promise((resolve, reject) => {
+    const query =
+      "update booking set status = $1 where id = $2 returning *";
+    postgreDb.query(query, [ status,id], (error, result) => {
+      if (error) {
+        console.log(error);
+        return reject({ status: 500, msg: "internal server error" });
+      }
+      return resolve({
+        status: 200,
+        msg: "data booking owner",
+        data: result.rows[0],
+      });
+    });
+  });
+};
+
+const paymentRepo = { postPayment , getBookingCustomer ,getBookingOwner,patchStatusBooking};
 
 module.exports = paymentRepo;

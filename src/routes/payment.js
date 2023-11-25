@@ -19,12 +19,14 @@ function uploadFile(req, res, next) {
 const {
     postPayment,
     getBookingCustomer,
-    getBookingOwner
+    getBookingOwner,
+    patchStatusBooking
   } = require("../controller/payment.js");
 
 PaymentRouter.post('/',isLogin(),uploadFile,cloudinary,postPayment);
 PaymentRouter.get('/customer/history/:status',isLogin(),getBookingCustomer)
-PaymentRouter.get('/owner/history/:status',isLogin(),getBookingOwner)
+PaymentRouter.get('/owner/history',isLogin(),getBookingOwner)
+PaymentRouter.patch('/owner/status/:id',isLogin(),patchStatusBooking)
 
 
 
