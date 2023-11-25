@@ -20,13 +20,15 @@ const {
     postPayment,
     getBookingCustomer,
     getBookingOwner,
-    patchStatusBooking
+    patchStatusBooking,
+    patchBookingTimeAndDate
   } = require("../controller/payment.js");
 
 PaymentRouter.post('/',isLogin(),uploadFile,cloudinary,postPayment);
 PaymentRouter.get('/customer/history/:status',isLogin(),getBookingCustomer)
 PaymentRouter.get('/owner/history',isLogin(),getBookingOwner)
 PaymentRouter.patch('/owner/status/:id',isLogin(),patchStatusBooking)
+PaymentRouter.patch('/owner/booking/:id',isLogin(),patchBookingTimeAndDate)
 
 
 
