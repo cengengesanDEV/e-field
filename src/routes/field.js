@@ -21,6 +21,6 @@ const {
   fieldRouter.get('/',getAllField)
   fieldRouter.get("/detail/:id/:date",getDetailField)
   fieldRouter.get("/detail/owner",isLogin(),getFieldByUserId)
-  fieldRouter.get("/delete/:id",deleteField)
+  fieldRouter.delete("/delete/:id",deleteField)
 
   module.exports = fieldRouter;
