@@ -253,7 +253,7 @@ const getDetailField = (id, date) => {
     const getFieldQuery = "select * from field where id = $1";
     const getImageQuery = "select image from image_field where field_id = $1";
     const getBooking =
-      "select start_play,end_play from booking where field_id = $1 and play_date = $2";
+      "select start_play,end_play from booking where field_id = $1 and play_date = $2 and status != 'cancel'";
     console.log({ id });
     postgreDb.query(getFieldQuery, [id], (err, result) => {
       if (err) {
@@ -301,7 +301,7 @@ const getDetailField = (id, date) => {
 const getOwnerField = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1";
+      const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
       const getImage = "select image from image_field where field_id = $1";
 
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {

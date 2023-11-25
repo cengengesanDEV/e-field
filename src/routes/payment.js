@@ -23,7 +23,7 @@ const {
   } = require("../controller/payment.js");
 
 PaymentRouter.post('/',isLogin(),uploadFile,cloudinary,postPayment);
-PaymentRouter.get('/customer/history/:status',isLogin(),getBookingCustomer)
+PaymentRouter.delete('/customer/history/:status',isLogin(),getBookingCustomer)
 PaymentRouter.get('/owner/history/:status',isLogin(),getBookingOwner)
 
 
