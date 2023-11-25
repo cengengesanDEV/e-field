@@ -55,7 +55,7 @@ const getBookingCustomer = (id, status) => {
       return resolve({
         status: 200,
         msg: "data booking customer",
-        data: result.rows,
+        data: result.rows.length > 0?result.rows:[],
       });
     });
   });
@@ -73,7 +73,7 @@ const getBookingOwner = (id, status) => {
       return resolve({
         status: 200,
         msg: "data booking owner",
-        data: result.rows,
+        data: result.rows.length > 0?result.rows:[],
       });
     });
   });
