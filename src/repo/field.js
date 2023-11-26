@@ -301,7 +301,7 @@ const getDetailField = (id, date) => {
 const getOwnerField = (id,params) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
+      let getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
       const getImage = "select image from image_field where field_id = $1";
       if(params.name){
         getFieldQuery +=` and name like '%${params.name}%'`
