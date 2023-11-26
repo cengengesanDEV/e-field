@@ -65,7 +65,7 @@ const getBookingOwner = (id, params) => {
   return new Promise((resolve, reject) => {
     const value = [id, params.status];
     let query =
-      "select b.id,b.play_date,b.start_play,b.end_play,b.username,b.image_payment,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address,u.image_identity,u.no_identity,u.full_name,u.phone_number from booking b inner join field f on b.field_id = f.id inner join users u on b.renter_id = u.id where f.users_id = $1 and b.deleted_renter is null and b.status = $2";
+      "select b.id,b.play_date,b.start_play,b.end_play,b.username,b.image_payment,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address,u.image_identity,u.no_identity,u.full_name,u.phone_number,f.id as field_id from booking b inner join field f on b.field_id = f.id inner join users u on b.renter_id = u.id where f.users_id = $1 and b.deleted_renter is null and b.status = $2";
     if (params.type) {
       query += ` and f.type = '${params.type}'`;
     }
