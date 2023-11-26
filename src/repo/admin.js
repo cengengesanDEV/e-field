@@ -105,6 +105,31 @@ const suspendUser = (id, msg) => {
   });
 };
 
-const adminRepo = { getDetailField, getUser, getOwnerField, suspendUser };
+const unsuspendUser = (id) => {
+  return new Promise((resolve, reject) => {
+    const query =
+      "update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null";
+    const timeStamp = Date.now() / 1000;
+    postgreDb.query(query, [timeStamp, id], (err) => {
+      if (err) {
+        console.log(err);
+        return reject({ status: 500, msg: "internal server error" });
+      }
+      return resolve({
+        status: 200,
+        msg: "users suspended",
+        data: result.rows[0],
+      });
+    });
+  });
+};
+
+const adminRepo = {
+  getDetailField,
+  getUser,
+  getOwnerField,
+  suspendUser,
+  unsuspendUser,
+};
 
 module.exports = adminRepo;
