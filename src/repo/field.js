@@ -304,7 +304,7 @@ const getOwnerField = (id,params) => {
       const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
       const getImage = "select image from image_field where field_id = $1";
       if(params.name){
-        getFieldQuery+=` and name like '%${params.name}%'`
+        getFieldQuery +=` and name like '%${params.name}%'`
       }
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {
         postgreDb.query(getFieldQuery, [id], (err, result) => {
@@ -339,6 +339,7 @@ const getOwnerField = (id,params) => {
         status: 200,
       });
     } catch (error) {
+      console.log(error)
       reject(error);
     }
   });
