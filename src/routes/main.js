@@ -2,7 +2,6 @@ const express = require("express");
 
 const authRouter = require("./auth.js");
 const userRouter = require("./users");
-const kontrakanRouter = require("./kontrakan");
 const fieldRouter = require("./field");
 const paymentRouter = require("./payment.js")
 
@@ -12,7 +11,6 @@ const prefix = "/api";
 
 mainRouter.use(`${prefix}/auth`, authRouter);
 mainRouter.use(`${prefix}/users`, userRouter);
-mainRouter.use(`${prefix}/kontrakan`, kontrakanRouter);
 mainRouter.use(`${prefix}/field`, fieldRouter);
 mainRouter.use(`${prefix}/payment`, paymentRouter);
 
