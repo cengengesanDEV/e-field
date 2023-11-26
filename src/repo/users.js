@@ -47,7 +47,7 @@ const register = (body) => {
               status,
               hashedPasswords,
               name,
-              pinActivation
+              pinActivation,
             ],
             (error, response) => {
               if (error) {
@@ -76,9 +76,7 @@ const profile = (body, token) => {
     const values = [];
     Object.keys(body).forEach((key, idx, array) => {
       if (idx === array.length - 1) {
-        query += `${key} = $${idx + 1} where id = $${
-          idx + 2
-        } returning *`;
+        query += `${key} = $${idx + 1} where id = $${idx + 2} returning *`;
         values.push(body[key], token);
         return;
       }
@@ -134,8 +132,7 @@ const deleteUsers = (id, msg) => {
 
 const getUsersById = (id) => {
   return new Promise((resolve, reject) => {
-    const query =
-      "select * from users where id = $1";
+    const query = "select * from users where id = $1";
     postgreDb.query(query, [id], (error, result) => {
       if (error) {
         console.log(error);
@@ -270,10 +267,14 @@ const forgotPassword = (email) => {
   });
 };
 
-const changeForgot = (otp, newPassword) => {
+const changeForgot = (otp, newPassword, confirmPassword) => {
   return new Promise((resolve, reject) => {
     const query = "select pinforgot from users where pinforgot = $1";
-    console.log("sini");
+    if (newPassword !== confirmPassword)
+      return reject({
+        status: 400,
+        msg: "new password and confirm password doesn`t match",
+      });
     postgreDb.query(query, [otp], (error, result) => {
       if (error) {
         console.log(error);
@@ -312,7 +313,8 @@ const changeForgot = (otp, newPassword) => {
 const validateUser = (pin) => {
   return new Promise((resolve, reject) => {
     const query = "select id from users where pin_activation = $1";
-    const updateQuery = "update users set pin_activation = null,status_acc = $1 where id = $2 returning email"
+    const updateQuery =
+      "update users set pin_activation = null,status_acc = $1 where id = $2 returning email";
     postgreDb.query(query, [pin], (error, result) => {
       if (error) {
         return reject({ status: 500, msg: "Internal server error" });
@@ -327,17 +329,21 @@ const validateUser = (pin) => {
         if (error) {
           return reject({ status: 500, msg: "Internal server error" });
         }
-        postgreDb.query(updateQuery, ["active",result.rows[0].id], (error, data) => {
-          if (error) {
-            console.log(error)
-            return reject({ status: 500, msg: "Internal server error" });
+        postgreDb.query(
+          updateQuery,
+          ["active", result.rows[0].id],
+          (error, data) => {
+            if (error) {
+              console.log(error);
+              return reject({ status: 500, msg: "Internal server error" });
+            }
+            resolve({
+              status: 201,
+              msg: "Validation Successfuly",
+              data: data.rows[0],
+            });
           }
-          resolve({
-            status: 201,
-            msg: "Validation Successfuly",
-            data: data.rows[0],
-          });
-        });
+        );
       });
     });
   });
@@ -354,7 +360,7 @@ const userRepo = {
   forgotPassword,
   changeForgot,
   postKtp,
-  validateUser
+  validateUser,
 };
 
 module.exports = userRepo;
