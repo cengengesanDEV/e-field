@@ -157,7 +157,7 @@ const getAllField = (param, hostAPI) => {
       if(param.name){
         link+= '&'
       }
-      query += `and city = '${param.city}' `;
+      query += `and city = '${param.city.split('%20').join(' ')}' `;
       link += `city=${param.city}`;
     }
     if (param.sort === "cheapest") {
