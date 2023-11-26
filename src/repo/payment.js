@@ -52,7 +52,7 @@ const postPayment = (id, body) => {
 const getBookingCustomer = (id, status) => {
   return new Promise((resolve, reject) => {
     const query =
-      "select b.play_date,b.id,b.total_dp,b.start_play,b.end_play,b.username,b.image_payment,b.bank_name,b.bank_number,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address from booking b inner join field f on b.field_id = f.id where b.renter_id = $1 and b.deleted_renter is null and b.status = $2";
+      "select b.play_date,b.id,b.total_dp,b.start_play,b.end_play,b.username,b.image_payment,b.bank_name,b.bank_number,b.booking_date,b.total_payment,b.status,f.name,f.city,f.image_cover,f.type,f.address,u.bank_name as owner_bank,u.no_rekening as owner_norek from booking b inner join field f on b.field_id = f.id inner join users u on f.users_id = u.id  where b.renter_id = $1 and b.deleted_renter is null and b.status = $2";
     postgreDb.query(query, [id, status], (error, result) => {
       if (error) {
         console.log(error);
