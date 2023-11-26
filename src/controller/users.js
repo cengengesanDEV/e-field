@@ -6,6 +6,24 @@ const register = async (req, res) => {
   try {
     const { body } = req;
     const response = await userRepo.register(body);
+    const setSendEmail = {
+      to: req.body.email,
+      subject: "Email Verification !",
+      mail: req.body.email,
+      template: "verificationEmail.html",
+      buttonUrl: `https://bookingfutsal.vercel.app/auth/${response.data.pin_activation}`,
+    };
+    await forgotMail(setSendEmail);
+    sendResponse.success(res, response.status, response);
+  } catch (error) {
+    console.log(error)
+    sendResponse.error(res, error.status, error);
+  }
+};
+
+const validateUser = async (req, res) => {
+  try {
+    const response = await userRepo.validateUser(req.params.pin);
     sendResponse.success(res, response.status, response);
   } catch (error) {
     console.log(error)
@@ -142,7 +160,8 @@ const userController = {
   editPassword,
   forgotPassword,
   forgotChange,
-  postKtp
+  postKtp,
+  validateUser
 };
 
 module.exports = userController;
