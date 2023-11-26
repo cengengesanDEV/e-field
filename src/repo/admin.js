@@ -20,7 +20,8 @@ const getUser = (role) => {
 const getOwnerField = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
+      const getFieldQuery =
+        "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
       const getImage = "select image from image_field where field_id = $1";
 
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {
@@ -41,7 +42,7 @@ const getOwnerField = (id) => {
           postgreDb.query(getImage, [hasil[index].id], (err, result) => {
             if (err) {
               console.log(err);
-              imageReject({ status: 500, msg: 'internal server error' });
+              imageReject({ status: 500, msg: "internal server error" });
               return;
             }
             imageResolve(result.rows);
@@ -80,16 +81,17 @@ const getDetailField = (id) => {
         if (result.rows.length > 0) {
           data = { ...data, images: result.rows };
         }
-        return resolve({data,status:200,msg:"data detail"})
+        return resolve({ data, status: 200, msg: "data detail" });
       });
     });
   });
 };
 
-const suspendUser = (id,msg) => {
+const suspendUser = (id, msg) => {
   return new Promise((resolve, reject) => {
-    const query = "insert into msg_suspend(id_user,msg) values($1,$2) returning *";
-    postgreDb.query(query, [id,msg], (err) => {
+    const query =
+      "insert into msg_suspend(id_user,msg) values($1,$2) returning *";
+    postgreDb.query(query, [id, msg], (err) => {
       if (err) {
         console.log(err);
         return reject({ status: 500, msg: "internal server error" });
@@ -103,6 +105,6 @@ const suspendUser = (id,msg) => {
   });
 };
 
-const adminRepo = {getDetailField,getUser,getOwnerField,suspendUser};
+const adminRepo = { getDetailField, getUser, getOwnerField, suspendUser };
 
-module.exports = adminRepo
+module.exports = adminRepo;

@@ -50,7 +50,7 @@ const postField = async (req, res) => {
 
   const getFieldByUserId = async (req, res) => {
     try {
-      const response = await fieldRepo.getOwnerField(req.userPayload.user_id);
+      const response = await fieldRepo.getOwnerField(req.userPayload.user_id,req.query);
       sendResponse.success(res, response.status, response);
     } catch (error) {
       sendResponse.error(res, error.status, error);
