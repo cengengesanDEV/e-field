@@ -12,6 +12,15 @@ const suspendUser = async (req, res) => {
     }
 }
 
+const unsuspendUser = async (req, res) => {
+    try {
+        const response = await adminRepo.unsuspendUser(req.params.id)
+        sendResponse.success(res, response.status, response);
+    } catch (error) {
+        sendResponse.error(res, error.status, error);
+    }
+}
+
 const getUser = async (req, res) => {
     try {
         const response = await adminRepo.getUser(req.params.role)
@@ -42,9 +51,12 @@ const getDetailOwnerField = async (req, res) => {
     }
 }
 
-const authController = {
-    login,
-    logout
+const adminController = {
+    suspendUser,
+    getUser,
+    getOwnerField,
+    getDetailOwnerField,
+    unsuspendUser
 }
 
-module.exports = authController;
+module.exports = adminController;
