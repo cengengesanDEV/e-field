@@ -91,7 +91,7 @@ const suspendUser = (id, msg) => {
   return new Promise((resolve, reject) => {
     const query =
       "insert into msg_suspend(id_user,msg) values($1,$2) returning *";
-    postgreDb.query(query, [id, msg], (err) => {
+    postgreDb.query(query, [id, msg], (err,result) => {
       if (err) {
         console.log(err);
         return reject({ status: 500, msg: "internal server error" });
@@ -110,7 +110,7 @@ const unsuspendUser = (id) => {
     const query =
       "update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null";
     const timeStamp = Date.now() / 1000;
-    postgreDb.query(query, [timeStamp, id], (err) => {
+    postgreDb.query(query, [timeStamp, id], (err,result) => {
       if (err) {
         console.log(err);
         return reject({ status: 500, msg: "internal server error" });
