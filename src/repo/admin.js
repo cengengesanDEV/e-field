@@ -91,15 +91,22 @@ const suspendUser = (id, msg) => {
   return new Promise((resolve, reject) => {
     const query =
       "insert into msg_suspend(id_user,msg) values($1,$2) returning *";
-    postgreDb.query(query, [id, msg], (err,result) => {
+    const queryEditStatus = "update users set status_acc = $1 where id = $2 returning *";
+    postgreDb.query(query, [id, msg], (err, response) => {
       if (err) {
         console.log(err);
         return reject({ status: 500, msg: "internal server error" });
       }
-      return resolve({
-        status: 200,
-        msg: "users suspended",
-        data: result.rows[0],
+      postgreDb.query(queryEditStatus, ["suspend", id], (err, result) => {
+        if (err) {
+          console.log(err);
+          return reject({ status: 500, msg: "internal server error" });
+        }
+        return resolve({
+          status: 200,
+          msg: "users suspended",
+          data: { ...result.rows[0], ...response.rows[0] },
+        });
       });
     });
   });
@@ -108,17 +115,24 @@ const suspendUser = (id, msg) => {
 const unsuspendUser = (id) => {
   return new Promise((resolve, reject) => {
     const query =
-      "update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null";
+      "update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null returning *";
+    const queryEditStatus = "update users set status_acc = $1 where id = $2 returning *";
     const timeStamp = Date.now() / 1000;
-    postgreDb.query(query, [timeStamp, id], (err,result) => {
+    postgreDb.query(query, [timeStamp, id], (err, response) => {
       if (err) {
         console.log(err);
         return reject({ status: 500, msg: "internal server error" });
       }
-      return resolve({
-        status: 200,
-        msg: "users suspended",
-        data: result.rows[0],
+      postgreDb.query(queryEditStatus, ["active", id], (err, result) => {
+        if (err) {
+          console.log(err);
+          return reject({ status: 500, msg: "internal server error" });
+        }
+        return resolve({
+          status: 200,
+          msg: "users active",
+          data: { ...result.rows[0], ...response.rows[0] },
+        });
       });
     });
   });
