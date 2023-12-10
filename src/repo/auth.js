@@ -31,7 +31,7 @@ const login = (body) => {
           });
         if (response.rows[0].status_acc === "suspend") {
           const querySuspend =
-            "select msg from msg_suspend where id_users = $1 and deleted_at is null";
+            "select msg from msg_suspend where id_user = $1 and deleted_at is null";
           postgreDb.query(querySuspend, [response.rows[0].id], (err, res) => {
             if (err) {
               console.log(err);
