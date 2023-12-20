@@ -1,16 +1,20 @@
-const postgreDb = require("../config/postgre"); //koneksi database
+const postgreDb = require('../config/postgre'); //koneksi database
 
-const getUser = (role) => {
+const getUser = (role, query) => {
   return new Promise((resolve, reject) => {
-    const query = "select * from users where role = $1";
-    postgreDb.query(query, [role], (err) => {
+    let sqlQuery = 'select * from users where role = $1 ';
+    if (query.name) {
+      sqlQuery += `and full_name like '%${query.name}%'`;
+    }
+    console.log(sqlQuery);
+    postgreDb.query(sqlQuery, [role], (err, result) => {
       if (err) {
         console.log(err);
-        return reject({ status: 500, msg: "internal server error" });
+        return reject({ status: 500, msg: 'internal server error' });
       }
       return resolve({
         status: 200,
-        msg: "data users",
+        msg: 'data users',
         data: result.rows,
       });
     });
@@ -21,14 +25,14 @@ const getOwnerField = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const getFieldQuery =
-        "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
-      const getImage = "select image from image_field where field_id = $1";
+        'select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null';
+      const getImage = 'select image from image_field where field_id = $1';
 
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {
         postgreDb.query(getFieldQuery, [id], (err, result) => {
           if (err) {
             console.log(err);
-            fieldReject({ msg: "internal server error", status: 500 });
+            fieldReject({ msg: 'internal server error', status: 500 });
             return;
           }
           fieldResolve(result.rows);
@@ -42,7 +46,7 @@ const getOwnerField = (id) => {
           postgreDb.query(getImage, [hasil[index].id], (err, result) => {
             if (err) {
               console.log(err);
-              imageReject({ status: 500, msg: "internal server error" });
+              imageReject({ status: 500, msg: 'internal server error' });
               return;
             }
             imageResolve(result.rows);
@@ -52,7 +56,7 @@ const getOwnerField = (id) => {
       }
 
       resolve({
-        msg: "data found",
+        msg: 'data found',
         data: hasil,
         status: 200,
       });
@@ -64,24 +68,24 @@ const getOwnerField = (id) => {
 
 const getDetailField = (id) => {
   return new Promise((resolve, reject) => {
-    const getFieldQuery = "select * from field where id = $1";
-    const getImageQuery = "select image from image_field where field_id = $1";
+    const getFieldQuery = 'select * from field where id = $1';
+    const getImageQuery = 'select image from image_field where field_id = $1';
     console.log({ id });
     postgreDb.query(getFieldQuery, [id], (err, result) => {
       if (err) {
         console.log(err);
-        return reject({ msg: "internal server error", status: 500 });
+        return reject({ msg: 'internal server error', status: 500 });
       }
       let data = { field: result.rows[0] };
       postgreDb.query(getImageQuery, [data.field.id], (err, result) => {
         if (err) {
           console.log(err);
-          return reject({ msg: "internal server error", status: 500 });
+          return reject({ msg: 'internal server error', status: 500 });
         }
         if (result.rows.length > 0) {
           data = { ...data, images: result.rows };
         }
-        return resolve({ data, status: 200, msg: "data detail" });
+        return resolve({ data, status: 200, msg: 'data detail' });
       });
     });
   });
@@ -89,22 +93,21 @@ const getDetailField = (id) => {
 
 const suspendUser = (id, msg) => {
   return new Promise((resolve, reject) => {
-    const query =
-      "insert into msg_suspend(id_user,msg) values($1,$2) returning *";
-    const queryEditStatus = "update users set status_acc = $1 where id = $2 returning *";
+    const query = 'insert into msg_suspend(id_user,msg) values($1,$2) returning *';
+    const queryEditStatus = 'update users set status_acc = $1 where id = $2 returning *';
     postgreDb.query(query, [id, msg], (err, response) => {
       if (err) {
         console.log(err);
-        return reject({ status: 500, msg: "internal server error" });
+        return reject({ status: 500, msg: 'internal server error' });
       }
-      postgreDb.query(queryEditStatus, ["suspend", id], (err, result) => {
+      postgreDb.query(queryEditStatus, ['suspend', id], (err, result) => {
         if (err) {
           console.log(err);
-          return reject({ status: 500, msg: "internal server error" });
+          return reject({ status: 500, msg: 'internal server error' });
         }
         return resolve({
           status: 200,
-          msg: "users suspended",
+          msg: 'users suspended',
           data: { ...result.rows[0], ...response.rows[0] },
         });
       });
@@ -115,22 +118,22 @@ const suspendUser = (id, msg) => {
 const unsuspendUser = (id) => {
   return new Promise((resolve, reject) => {
     const query =
-      "update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null returning *";
-    const queryEditStatus = "update users set status_acc = $1 where id = $2 returning *";
+      'update msg_suspend set deleted_at = to_timestamp($1) where id_user = $2 and deleted_at is null returning *';
+    const queryEditStatus = 'update users set status_acc = $1 where id = $2 returning *';
     const timeStamp = Date.now() / 1000;
     postgreDb.query(query, [timeStamp, id], (err, response) => {
       if (err) {
         console.log(err);
-        return reject({ status: 500, msg: "internal server error" });
+        return reject({ status: 500, msg: 'internal server error' });
       }
-      postgreDb.query(queryEditStatus, ["active", id], (err, result) => {
+      postgreDb.query(queryEditStatus, ['active', id], (err, result) => {
         if (err) {
           console.log(err);
-          return reject({ status: 500, msg: "internal server error" });
+          return reject({ status: 500, msg: 'internal server error' });
         }
         return resolve({
           status: 200,
-          msg: "users active",
+          msg: 'users active',
           data: { ...result.rows[0], ...response.rows[0] },
         });
       });
