@@ -1,21 +1,11 @@
-const postgreDb = require("../config/postgre"); //koneksi database
-const cloudinary = require("../config/cloudinary");
+const postgreDb = require('../config/postgre'); //koneksi database
+const cloudinary = require('../config/cloudinary');
 
 const postField = (id, body, images) => {
   return new Promise((resolve, reject) => {
-    const {
-      name,
-      city,
-      start_hour,
-      end_hour,
-      price,
-      image_cover,
-      description,
-      type,
-      address
-    } = body;
+    const { name, city, start_hour, end_hour, price, image_cover, description, type, address } = body;
     const query =
-      "insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type,address) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
+      'insert into field(users_id,name,city,start_hour,end_hour,price,image_cover,description,type,address) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *';
     postgreDb.query(
       query,
       [
@@ -28,16 +18,16 @@ const postField = (id, body, images) => {
         image_cover.secure_url,
         description,
         type,
-        address
+        address,
       ],
       (error, result) => {
         if (error) {
           console.log(error);
-          return reject({ status: 500, msg: "internal server error" });
+          return reject({ status: 500, msg: 'internal server error' });
         }
         let resultSuccess = { ...result.rows[0] };
         const field_id = result.rows[0].id;
-        let imageValues = "values";
+        let imageValues = 'values';
         let preapreImage = [];
         images.forEach((image, index) => {
           if (index !== images.length - 1) {
@@ -51,7 +41,7 @@ const postField = (id, body, images) => {
         postgreDb.query(addImageQuery, preapreImage, (err, result) => {
           if (err) {
             console.log(err);
-            return reject({ status: 500, msg: "internal server error" });
+            return reject({ status: 500, msg: 'internal server error' });
           }
           const imageResult = [];
           result.rows.forEach((image) => imageResult.push(image.image));
@@ -61,7 +51,7 @@ const postField = (id, body, images) => {
           };
           return resolve({
             status: 201,
-            msg: "kontrakan created",
+            msg: 'kontrakan created',
             data: resultSuccess,
           });
         });
@@ -72,14 +62,14 @@ const postField = (id, body, images) => {
 
 const patchField = (req, id) => {
   return new Promise((resolve, reject) => {
-    let query = "update field set ";
+    let query = 'update field set ';
     let { body } = req;
-    if (body.image_cover === "") delete body.image_cover;
+    if (body.image_cover === '') delete body.image_cover;
     if (body.imageDelete) {
       const imageDelete = body.imageDelete;
       delete body.imageDelete;
-      let split = imageDelete.split(",");
-      let queryDeleteImage = "delete from image_field where image in (";
+      let split = imageDelete.split(',');
+      let queryDeleteImage = 'delete from image_field where image in (';
       split.forEach((_, index, arr) => {
         if (index === arr.length - 1) {
           queryDeleteImage += `$${index + 1})`;
@@ -91,7 +81,7 @@ const patchField = (req, id) => {
         if (error) {
           console.log(error);
           console.log(queryDeleteImage);
-          return reject({ status: 500, msg: "internal server error" });
+          return reject({ status: 500, msg: 'internal server error' });
         }
         split.map((value) => {
           cloudinary.uploader.destroy(value);
@@ -100,7 +90,7 @@ const patchField = (req, id) => {
     }
     if (req.images) {
       const images = req.images;
-      let imageValues = "values";
+      let imageValues = 'values';
       let preapreImage = [];
       images.forEach((image, index) => {
         if (index !== images.length - 1) {
@@ -115,7 +105,7 @@ const patchField = (req, id) => {
       postgreDb.query(addImageQuery, preapreImage, (err, result) => {
         if (err) {
           console.log(err);
-          return reject({ status: 500, msg: "internal server error" });
+          return reject({ status: 500, msg: 'internal server error' });
         }
       });
     }
@@ -147,35 +137,42 @@ const patchField = (req, id) => {
 
 const getAllField = (param, hostAPI) => {
   return new Promise((resolve, reject) => {
-    let query = "select * from field where deleted_at is null ";
+    let query = 'select * from field where deleted_at is null ';
     let link = `${hostAPI}/api/field?`;
-    if(param.name){
-      query += `and name like '%${param.name}%' `
-      link += `name=${param.name}`
+    if (param.name) {
+      query += `and name like '%${param.name}%' `;
+      link += `name=${param.name}`;
     }
     if (param.city) {
-      if(param.name){
-        link+= '&'
+      if (param.name) {
+        link += '&';
       }
       query += `and city = '${param.city.split('%20').join(' ')}' `;
       link += `city=${param.city}`;
     }
-    if (param.sort === "cheapest") {
+    if (query.ownerId) {
       if (param.city || param.name) {
+        link += `&`;
+      }
+      query += `and name like users_id'%${param.ownerId}%' `;
+      link += `ownerId=${param.ownerId}`;
+    }
+    if (param.sort === 'cheapest') {
+      if (param.city || param.name || param.ownerId) {
         link += `&`;
       }
       query += `order by price asc`;
       link += `sort=cheapest`;
     }
-    if (param.sort === "expensive") {
+    if (param.sort === 'expensive') {
       if (param.city || param.name) {
         link += `&`;
       }
-      query += "order by price desc";
+      query += 'order by price desc';
       link += `sort=expensive`;
     }
 
-    let queryLimit = "";
+    let queryLimit = '';
     let values = [];
     if (param.page && param.limit) {
       let page = parseInt(param.page);
@@ -189,12 +186,12 @@ const getAllField = (param, hostAPI) => {
     postgreDb.query(query, (err, result) => {
       if (err) {
         console.log(err);
-        return reject({ msg: "internal server error", status: 500 });
+        return reject({ msg: 'internal server error', status: 500 });
       }
       postgreDb.query(queryLimit, values, (err, queryresult) => {
         if (err) {
           console.log(err);
-          return reject({ msg: "internal server error", status: 500 });
+          return reject({ msg: 'internal server error', status: 500 });
         }
         let resNext = null;
         let resPrev = null;
@@ -203,8 +200,8 @@ const getAllField = (param, hostAPI) => {
           let limit = parseInt(param.limit);
           let start = (page - 1) * limit;
           let end = page * limit;
-          let next = "";
-          let prev = "";
+          let next = '';
+          let prev = '';
           const dataNext = Math.ceil(result.rowCount / limit);
           if (start <= queryresult.rowCount) {
             next = page + 1;
@@ -220,12 +217,12 @@ const getAllField = (param, hostAPI) => {
           }
           let sendResponse = {
             dataCount: queryresult.rowCount,
-            next: resNext?true:false,
-            prev: resPrev?true:false,
+            next: resNext ? true : false,
+            prev: resPrev ? true : false,
             totalPage: Math.ceil(result.rowCount / limit),
           };
           return resolve({
-            msg: "data found",
+            msg: 'data found',
             data: queryresult.rows,
             meta: sendResponse,
             status: 200,
@@ -233,12 +230,12 @@ const getAllField = (param, hostAPI) => {
         }
         let sendResponse = {
           dataCount: result.rowCount,
-          next: resNext?true:false,
-          prev: resPrev?true:false,
+          next: resNext ? true : false,
+          prev: resPrev ? true : false,
           totalPage: null,
         };
         return resolve({
-          msg: "data found",
+          msg: 'data found',
           data: queryresult.rows,
           meta: sendResponse,
           status: 200,
@@ -250,21 +247,21 @@ const getAllField = (param, hostAPI) => {
 
 const getDetailField = (id, date) => {
   return new Promise((resolve, reject) => {
-    const getFieldQuery = "select * from field where id = $1";
-    const getImageQuery = "select image from image_field where field_id = $1";
+    const getFieldQuery = 'select * from field where id = $1';
+    const getImageQuery = 'select image from image_field where field_id = $1';
     const getBooking =
       "select start_play,end_play from booking where field_id = $1 and play_date = $2 and status != 'cancel'";
     console.log({ id });
     postgreDb.query(getFieldQuery, [id], (err, result) => {
       if (err) {
         console.log(err);
-        return reject({ msg: "internal server error", status: 500 });
+        return reject({ msg: 'internal server error', status: 500 });
       }
       let data = { field: result.rows[0] };
       postgreDb.query(getImageQuery, [data.field.id], (err, result) => {
         if (err) {
           console.log(err);
-          return reject({ msg: "internal server error", status: 500 });
+          return reject({ msg: 'internal server error', status: 500 });
         }
         if (result.rows.length > 0) {
           data = { ...data, images: result.rows };
@@ -272,23 +269,27 @@ const getDetailField = (id, date) => {
         postgreDb.query(getBooking, [id, date], (err, result) => {
           if (err) {
             console.log(err);
-            return reject({ msg: "internal server error", status: 500 });
+            return reject({ msg: 'internal server error', status: 500 });
           }
-          const dataValue = []
+          const dataValue = [];
           const totalPlay = [];
           if (result.rows.length > 0) {
             result.rows.forEach((value) => {
               for (let x = value.start_play; x < value.end_play; x++) {
-                totalPlay.push({start:x,end:x+1});
+                totalPlay.push({ start: x, end: x + 1 });
               }
             });
           }
-          for(let i = data.field.start_hour;i<=data.field.end_hour;i++ ){
-            dataValue.push({ start: i, end: i + 1 , isBooked:totalPlay.find((value)=>value.start===i&&value.end===i+1)?true:false})
+          for (let i = data.field.start_hour; i <= data.field.end_hour; i++) {
+            dataValue.push({
+              start: i,
+              end: i + 1,
+              isBooked: totalPlay.find((value) => value.start === i && value.end === i + 1) ? true : false,
+            });
           }
           data = { ...data, dataValue };
           return resolve({
-            msg: "data found",
+            msg: 'data found',
             data: data,
             status: 200,
           });
@@ -298,19 +299,20 @@ const getDetailField = (id, date) => {
   });
 };
 
-const getOwnerField = (id,params) => {
+const getOwnerField = (id, params) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let getFieldQuery = "select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null";
-      const getImage = "select image from image_field where field_id = $1";
-      if(params.name){
-        getFieldQuery +=` and name like '%${params.name}%'`
+      let getFieldQuery =
+        'select id,name,city,start_hour,end_hour,price,image_cover,description,type,address from field where users_id = $1 and deleted_at is null';
+      const getImage = 'select image from image_field where field_id = $1';
+      if (params.name) {
+        getFieldQuery += ` and name like '%${params.name}%'`;
       }
       const fieldResult = await new Promise((fieldResolve, fieldReject) => {
         postgreDb.query(getFieldQuery, [id], (err, result) => {
           if (err) {
             console.log(err);
-            fieldReject({ msg: "internal server error", status: 500 });
+            fieldReject({ msg: 'internal server error', status: 500 });
             return;
           }
           fieldResolve(result.rows);
@@ -334,29 +336,28 @@ const getOwnerField = (id,params) => {
       }
 
       resolve({
-        msg: "data found",
+        msg: 'data found',
         data: hasil,
         status: 200,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       reject(error);
     }
   });
 };
 
-
 const deleteField = (id) => {
   return new Promise((resolve, reject) => {
-    const getFieldQuery = "update field set deleted_at = to_timestamp($1) where id = $2";
+    const getFieldQuery = 'update field set deleted_at = to_timestamp($1) where id = $2';
     const timeStamp = Date.now() / 1000;
-    postgreDb.query(getFieldQuery, [timeStamp,id], (err, result) => {
+    postgreDb.query(getFieldQuery, [timeStamp, id], (err, result) => {
       if (err) {
         console.log(err);
-        return reject({ msg: "internal server error", status: 500 });
+        return reject({ msg: 'internal server error', status: 500 });
       }
       return resolve({
-        msg: "delete field success",
+        msg: 'delete field success',
         data: result.rows,
         status: 200,
       });
@@ -370,7 +371,7 @@ const fieldRepo = {
   getAllField,
   getDetailField,
   getOwnerField,
-  deleteField
+  deleteField,
 };
 
 module.exports = fieldRepo;
