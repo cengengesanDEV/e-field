@@ -136,6 +136,7 @@ const patchField = (req, id) => {
 };
 
 const getAllField = (param, hostAPI) => {
+  console.log(param);
   return new Promise((resolve, reject) => {
     let query = 'select * from field where deleted_at is null ';
     let link = `${hostAPI}/api/field?`;
@@ -150,7 +151,7 @@ const getAllField = (param, hostAPI) => {
       query += `and city = '${param.city.split('%20').join(' ')}' `;
       link += `city=${param.city}`;
     }
-    if (query.ownerId) {
+    if (param.ownerId) {
       if (param.city || param.name) {
         link += `&`;
       }
@@ -183,6 +184,7 @@ const getAllField = (param, hostAPI) => {
     } else {
       queryLimit = query;
     }
+    console.log(query);
     postgreDb.query(query, (err, result) => {
       if (err) {
         console.log(err);
