@@ -154,7 +154,7 @@ const getAllField = (param, hostAPI) => {
       if (param.city || param.name) {
         link += `&`;
       }
-      query += `and name like users_id'%${param.ownerId}%' `;
+      query += `and users_id=${param.ownerId}`;
       link += `ownerId=${param.ownerId}`;
     }
     if (param.sort === 'cheapest') {
