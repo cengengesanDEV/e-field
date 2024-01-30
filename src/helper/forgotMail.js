@@ -24,7 +24,7 @@ module.exports = {
         service: 'gmail',
         auth: {
           type: 'OAuth2',
-          user: 'fcb.nyak@gmail.com',
+          user: 'nyengircengengesan@gmail.com',
           clientId,
           clientSecret,
           refreshToken,
