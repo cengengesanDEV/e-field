@@ -113,7 +113,7 @@ const getBookingOwner = (id, params) => {
 const patchStatusBooking = (id, status, total) => {
   return new Promise((resolve, reject) => {
     const queryTotal = status === 'success' ? `, total_dp = ${Number(total)}` : '';
-    const query = `update booking set status${queryTotal} = $1 where id = $2 returning *`;
+    const query = `update booking set status = $1${queryTotal} where id = $2 returning *`;
     postgreDb.query(query, [status, id], (error, result) => {
       if (error) {
         console.log(error);
