@@ -1,5 +1,6 @@
 const postgreDb = require('../config/postgre'); //koneksi database
 const cloudinary = require('../config/cloudinary');
+const makeSchedule = require('../utils/makeSchedule');
 
 const postField = (id, body, images) => {
   return new Promise((resolve, reject) => {
@@ -253,13 +254,15 @@ const getDetailField = (id, date) => {
     const getImageQuery = 'select image from image_field where field_id = $1';
     const getBooking =
       "select start_play,end_play from booking where field_id = $1 and play_date = $2 and status != 'cancel'";
-    console.log({ id });
     postgreDb.query(getFieldQuery, [id], (err, result) => {
       if (err) {
         console.log(err);
         return reject({ msg: 'internal server error', status: 500 });
       }
       let data = { field: result.rows[0] };
+      const { start_hour, end_hour } = data.field;
+      const schedule = makeSchedule(start_hour, end_hour);
+      console.log(schedule);
       postgreDb.query(getImageQuery, [data.field.id], (err, result) => {
         if (err) {
           console.log(err);
@@ -274,22 +277,25 @@ const getDetailField = (id, date) => {
             return reject({ msg: 'internal server error', status: 500 });
           }
           const dataValue = [];
-          const totalPlay = [];
+          const bookedHours = [];
           if (result.rows.length > 0) {
             result.rows.forEach((value) => {
               for (let x = value.start_play; x < value.end_play; x++) {
-                totalPlay.push({ start: x, end: x + 1 });
+                bookedHours.push({ start: x, end: x + 1 });
               }
             });
           }
-          for (let i = data.field.start_hour; i <= data.field.end_hour; i++) {
-            dataValue.push({
-              start: i,
-              end: i + 1,
-              isBooked: totalPlay.find((value) => value.start === i && value.end === i + 1) ? true : false,
-            });
-          }
-          data = { ...data, dataValue };
+          console.log(bookedHours);
+          bookedHours.forEach(({ start, end }) => {
+            for (let i = start; i < end && i <= schedule[schedule.length - 1]; i++) {
+              const index = schedule.indexOf(i);
+              if (index !== -1) {
+                schedule.splice(index, 1);
+              }
+            }
+          });
+
+          data = { ...data, dataValue: schedule };
           return resolve({
             msg: 'data found',
             data: data,
