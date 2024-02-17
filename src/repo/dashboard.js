@@ -1,37 +1,39 @@
 const postgreDb = require('../config/postgre.js');
 
-const getIncomes = (id, type) => {
+const getIncomes = (id, year) => {
   return new Promise((resolve, reject) => {
-    const incomeType = type || 'weekly';
-
-    const datePartMap = {
-      weekly: "DATE_TRUNC('week', b.booking_date)",
-      monthly: 'EXTRACT(month FROM b.booking_date)',
-      yearly: 'EXTRACT(year FROM b.booking_date)',
-    };
-
-    const datePart = datePartMap[incomeType] || datePartMap['weekly']; // Default to weekly if type is not recognized
-
-    const query = `
+    const selectedYear = year ?? new Date().getFullYear().toString();
+    const query = `WITH all_months AS (
+      SELECT generate_series(1, 12) AS period
+    )
+    SELECT
+      to_char(to_timestamp(am.period::text, 'MM'), 'Month') AS month,
+      COALESCE(SUM(b.total_payment), 0) AS income
+    FROM
+      all_months am
+    LEFT JOIN
+      (
         SELECT
-          ${datePart} as period,
-          f.name as fieldName,
-          SUM(b.total_payment) AS income
+          EXTRACT(month FROM b.booking_date) as period,
+          SUM(b.total_payment) AS total_payment
         FROM
-          booking b
-        JOIN
-          field f ON b.field_id = f.id
-        JOIN
+          field f
+        LEFT OUTER JOIN
+          booking b ON b.field_id = f.id AND b.status = $2
+        LEFT OUTER JOIN
           users u ON f.users_id = u.id
         WHERE
-          u.id = $1 AND b.status = $2
+          u.id = $1 AND EXTRACT(year FROM b.booking_date) = $3
         GROUP BY
-          period, fieldName
-        ORDER BY
-        period DESC
-      `;
+          period
+      ) b ON am.period = b.period
+    GROUP BY
+      am.period
+    ORDER BY
+      am.period ASC;
+    `;
 
-    postgreDb.query(query, [id, 'success'], (error, result) => {
+    postgreDb.query(query, [id, 'success', selectedYear], (error, result) => {
       if (error) {
         console.log(error);
         reject({ status: 500, msg: 'internal server error' });

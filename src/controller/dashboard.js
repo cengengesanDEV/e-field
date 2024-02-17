@@ -3,7 +3,7 @@ const dashboardRepo = require('../repo/dashboard');
 
 const getIncomes = async (req, res) => {
   try {
-    const response = await dashboardRepo.getIncomes(req.userPayload.user_id, req.query.type);
+    const response = await dashboardRepo.getIncomes(req.userPayload.user_id, req.query.year);
     sendResponse.success(res, response.status, response);
   } catch (error) {
     console.log(error);
