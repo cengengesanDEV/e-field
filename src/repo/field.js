@@ -248,12 +248,13 @@ const getAllField = (param, hostAPI) => {
   });
 };
 
-const getDetailField = (id, date) => {
+const getDetailField = (id, date, editSchedule) => {
   return new Promise((resolve, reject) => {
     const getFieldQuery = 'select * from field where id = $1';
     const getImageQuery = 'select image from image_field where field_id = $1';
-    const getBooking =
-      "select start_play,end_play from booking where field_id = $1 and play_date = $2 and status != 'cancel'";
+
+    const isEditSchedule = editSchedule ? "='success'" : "!='cancel'";
+    const getBooking = `select start_play,end_play from booking where field_id = $1 and play_date = $2 and status ${isEditSchedule}`;
     postgreDb.query(getFieldQuery, [id], (err, result) => {
       if (err) {
         console.log(err);
@@ -276,7 +277,6 @@ const getDetailField = (id, date) => {
             console.log(err);
             return reject({ msg: 'internal server error', status: 500 });
           }
-          const dataValue = [];
           const bookedHours = [];
           if (result.rows.length > 0) {
             result.rows.forEach((value) => {
